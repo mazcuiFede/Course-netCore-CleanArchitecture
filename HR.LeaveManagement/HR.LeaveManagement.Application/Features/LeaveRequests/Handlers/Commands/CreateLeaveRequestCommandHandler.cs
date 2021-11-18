@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using HR.LeaveManagement.Application.Contracts.Infrastructure;
+using HR.LeaveManagement.Application.Contracts.Persistence;
 using HR.LeaveManagement.Application.DTOs.LeaveRequest.Validators;
 using HR.LeaveManagement.Application.Features.LeaveRequests.Request.Commands;
-using HR.LeaveManagement.Application.Persistance.Contracts;
+using HR.LeaveManagement.Application.Models;
 using HR.LeaveManagement.Application.Responses;
 using HR.LeaveManagement.Domain;
 using MediatR;
@@ -19,10 +21,16 @@ namespace HR.LeaveManagement.Application.Features.LeaveRequests.Handlers.Command
     {
         private readonly ILeaveRequestRepository _leaveRequestRepository;
         private readonly IMapper _mapper;
-        public CreateLeaveRequestCommandHandler(ILeaveRequestRepository leaveRequestRepository, IMapper mapper)
+        private readonly IEmailSender _emailSender;
+
+        public CreateLeaveRequestCommandHandler(
+            ILeaveRequestRepository leaveRequestRepository, 
+            IMapper mapper,
+            IEmailSender emailSender)
         {
             _leaveRequestRepository = leaveRequestRepository;
             _mapper = mapper;
+            _emailSender = emailSender;
         }
 
         public async Task<BaseCommandResponse> Handle(CreateLeaveRequestCommand request, CancellationToken cancellationToken)
@@ -46,7 +54,24 @@ namespace HR.LeaveManagement.Application.Features.LeaveRequests.Handlers.Command
 
             response.Sucess = true;
             response.Message = "Created";
-            response.Id = leaveRequest.Id;  
+            response.Id = leaveRequest.Id;
+
+            var email = new Email
+            {
+                Body = $"Your leave request has been submitted successfully",
+                To = "employee@gmail.com",
+                Subject = "Leave request OK"
+            };
+            
+            try
+            {
+                await _emailSender.SendEmail(email);
+            }
+            catch (Exception)
+            {
+                //I don't care If email sending fails
+            }
+            
 
             return response;
         }
