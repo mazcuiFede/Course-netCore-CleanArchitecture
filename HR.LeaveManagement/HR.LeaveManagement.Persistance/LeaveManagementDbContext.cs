@@ -12,7 +12,8 @@ namespace HR.LeaveManagement.Persistence
 {
     public class LeaveManagementDbContext : DbContext
     {
-        public LeaveManagementDbContext(DbContextOptions<LeaveManagementDbContext> options) : base(options) 
+        public LeaveManagementDbContext(DbContextOptions<LeaveManagementDbContext> options) 
+            : base(options) 
         {
 
         }
@@ -34,7 +35,7 @@ namespace HR.LeaveManagement.Persistence
             }
             return base.SaveChangesAsync(cancellationToken);
         }
-        public DbSet<LeaveRequest> LeaveRequests{ get; set; }
+        public DbSet<LeaveRequest> LeaveRequests { get; set; }
         public DbSet<LeaveType> LeaveTypes { get; set; }
         public DbSet<LeaveAllocation> LeaveAllocations { get; set; }
     }

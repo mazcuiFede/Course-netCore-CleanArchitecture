@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +10,7 @@ namespace HR.LeaveManagement.Persistence.Repositories
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly LeaveManagementDbContext _dbContext;
+
         public GenericRepository(LeaveManagementDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -19,15 +19,12 @@ namespace HR.LeaveManagement.Persistence.Repositories
         public async Task<T> Add(T entity)
         {
             await _dbContext.AddAsync(entity);
-            await _dbContext.SaveChangesAsync();
             return entity;
-
         }
 
         public async Task Delete(T entity)
         {
             _dbContext.Set<T>().Remove(entity);
-            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<bool> Exists(int id)
@@ -51,6 +48,7 @@ namespace HR.LeaveManagement.Persistence.Repositories
             _dbContext.Entry(entity).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
         }
+
 
     }
 }
